@@ -7,13 +7,15 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import entity.Player;
+
 public class GamePanel extends JPanel implements Runnable{	// GamePanel class inherits JPanel class, it has all the functions of it. It also implements Runnable interface
 	
 	// SCREEN SETTINGS
 	final int originalTileSize = 16;	// 16x16 tile will be the default size of player character, npc, etc.
 	final int scale = 3;				// this will help scale originalTileSize to 48px
 	
-	final int tileSize = originalTileSize * scale;	// 48x48 tile
+	public final int tileSize = originalTileSize * scale;	// 48x48 tile
 	
 	// decide the size of game screen, how many tiles the game displays horizontally and vertically
 	final int maxScreenCol = 16;
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 	
 	Thread gameThread;	// this will keep program running until we stop it
 						// when we start gameThread it will automatically call the run() method
+	
+	Player player = new Player(this,KeyH);
 	
 	// sets player's default position
 	int playerX = 100;
@@ -92,18 +96,7 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 	
 	public void update() {
 		
-		if (KeyH.upPressed == true) {
-			playerY -= playerSpeed;
-		}
-		else if (KeyH.downPressed == true) {
-			playerY += playerSpeed;
-		}
-		else if (KeyH.leftPressed == true) {
-			playerX -= playerSpeed;
-		}
-		else if (KeyH.rightPressed == true) {
-			playerX += playerSpeed;
-		}
+		player.update();
 		
 	}
 	
@@ -113,9 +106,7 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 		
 		Graphics2D g2 =	(Graphics2D)g;	// Graphics2D extends Graphics class, provides more sophisticated control
 		
-		g2.setColor(Color.white);	// sets a color to use for drawing objects
-		
-		g2.fillRect(playerX, playerY, tileSize, tileSize);	// draws a rectangle and fills it with specified color
+		player.draw(g2);
 	
 		g2.dispose();	// dispose the graphics and frees resources
 	}
