@@ -21,9 +21,18 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 	final int screenWidth = tileSize * maxScreenCol;	// 768px
 	final int screenHeight = tileSize * maxScreenRow;	// 576px
 	
+	// FPS
+	int FPS = 60;
+	
+	KeyHandler KeyH = new KeyHandler();	// instantiate key handler
 	
 	Thread gameThread;	// this will keep program running until we stop it
 						// when we start gameThread it will automatically call the run() method
+	
+	// sets player's default position
+	int playerX = 100;
+	int playerY = 100;
+	int playerSpeed = 4;
 	
 	
 	//constructor for game panel
@@ -35,6 +44,8 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 		// improve rendering performance
 		this.setDoubleBuffered(true);	// when set to true, all the drawing from this component is done in an off-screen painting buffer
 		
+		this.addKeyListener(KeyH);		// this GamePanel can recognise key input
+		this.setFocusable(true);		// the game panel can be focused to receive key input
 	}
 	
 	public void startGameThread() {
@@ -48,27 +59,51 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 	@Override
 	public void run() {		// the run method is where the game loop is created, core of the game
 		
+		double drawInterval = 1000000000 / FPS;	// we are dividing 1s by 60FPS ~0.0166, we draw the screen every this often
+		double delta = 0;
+		long lastTime = System.nanoTime();
+		long currentTime;
+		
 		while(gameThread != null) {	// as long as the thread exists we iterate through the loop
 			
-//			System.out.println("The game loop is running");
+			currentTime = System.nanoTime();	// check current time
+						
+					// how much time has passed
+			delta += (currentTime - lastTime) / drawInterval;
 			
-			// we will need TWO things
-			
-			
-			// 1. Update: update information (i.e. character positions)
-			
-			update();
+			lastTime = currentTime;
 			
 			
-			// 2. Draw: draw screen with updated information
-			
-			repaint();	// this is how the paintComponnt method is called
+			// when delta reaches the draw interval we update and repaint
+			if (delta >= 1) {
+				
+				// we will need TWO things
+				// 1. Update: update information (i.e. character positions)
+				update();
+				// 2. Draw: draw screen with updated information
+				repaint();	// this is how the paintComponnt method is called
+				
+				delta --;	// resets delta
+			}
 			
 		};
 		
 	}
 	
 	public void update() {
+		
+		if (KeyH.upPressed == true) {
+			playerY -= playerSpeed;
+		}
+		else if (KeyH.downPressed == true) {
+			playerY += playerSpeed;
+		}
+		else if (KeyH.leftPressed == true) {
+			playerX -= playerSpeed;
+		}
+		else if (KeyH.rightPressed == true) {
+			playerX += playerSpeed;
+		}
 		
 	}
 	
@@ -80,7 +115,7 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 		
 		g2.setColor(Color.white);	// sets a color to use for drawing objects
 		
-		g2.fillRect(100, 100, tileSize, tileSize);	// draws a rectangle and fills it with specified color
+		g2.fillRect(playerX, playerY, tileSize, tileSize);	// draws a rectangle and fills it with specified color
 	
 		g2.dispose();	// dispose the graphics and frees resources
 	}
