@@ -2,49 +2,146 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
 
-public class Player extends Entity{
+public class Player extends Entity {
 
 	GamePanel gp;
 	KeyHandler keyH;
-	
-	public Player (GamePanel gp, KeyHandler keyH) {
+
+	public Player(GamePanel gp, KeyHandler keyH) {
 		this.gp = gp;
 		this.keyH = keyH;
-		
+
 		setDefaultValues();
+
+		getPlayerImage();
 	}
-	
-	
+
 	// sets player's default position and speed
 	public void setDefaultValues() {
-		
+
 		x = 100;
 		y = 100;
 		speed = 4;
+		direction = "down";
 	}
-	
+
+	public void getPlayerImage() {
+
+		try {
+
+			up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
+			up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
+			down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
+			down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
+			left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
+			left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
+			right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
+			right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void update() {
-		if (keyH.upPressed == true) {
-			y -= speed;
+
+		if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true
+				|| keyH.rightPressed == true) {
+
+			if (keyH.upPressed == true) {
+				direction = "up";
+				y -= speed;
+			} 
+			else if (keyH.downPressed == true) {
+				direction = "down";
+				y += speed;
+			} 
+			else if (keyH.leftPressed == true) {
+				direction = "left";
+				x -= speed;
+			} 
+			else if (keyH.rightPressed == true) {
+				direction = "right";
+				x += speed;
+			}
+
+			spriteCounter++;
+			if (spriteCounter > 12) {
+				if (spriteNum == 1) {
+					spriteNum++;
+				} 
+				else if (spriteNum == 2) {
+					spriteNum--;
+				}
+				spriteCounter = 0;
+			}
+
 		}
-		else if (keyH.downPressed == true) {
-			y += speed;
-		}
-		else if (keyH.leftPressed == true) {
-			x -= speed;
-		}
-		else if (keyH.rightPressed == true) {
-			x += speed;
-		}
+
 	}
-	
+
 	public void draw(Graphics2D g2) {
-		g2.setColor(Color.white);	// sets a color to use for drawing objects
-		
-		g2.fillRect(x, y, gp.tileSize, gp.tileSize); // draws a rectangle and fills it with specified color
+
+//		g2.setColor(Color.white);	// sets a color to use for drawing objects
+//		g2.fillRect(x, y, gp.tileSize, gp.tileSize); // draws a rectangle and fills it with specified color
+
+		BufferedImage image = null;
+
+		switch (direction) {
+
+		case "up":
+			switch (spriteNum) {
+			case 1:
+				image = up1;
+				break;
+			case 2:
+				image = up2;
+				break;
+			}
+			break;
+
+		case "down":
+			switch (spriteNum) {
+			case 1:
+				image = down1;
+				break;
+			case 2:
+				image = down2;
+				break;
+			}
+			break;
+
+		case "left":
+			switch (spriteNum) {
+			case 1:
+				image = left1;
+				break;
+			case 2:
+				image = left2;
+				break;
+			}
+			break;
+
+		case "right":
+			switch (spriteNum) {
+			case 1:
+				image = right1;
+				break;
+			case 2:
+				image = right2;
+				break;
+			}
+			break;
+		}
+
+		g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
 	}
 }
