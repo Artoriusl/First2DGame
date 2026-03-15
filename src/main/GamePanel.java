@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import entity.Player;
+import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable{	// GamePanel class inherits JPanel class, it has all the functions of it. It also implements Runnable interface
 	
@@ -18,26 +19,29 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 	public final int tileSize = originalTileSize * scale;	// 48x48 tile
 	
 	// decide the size of game screen, how many tiles the game displays horizontally and vertically
-	final int maxScreenCol = 16;
-	final int maxScreenRow = 12;
-	final int screenWidth = tileSize * maxScreenCol;	// 768px
-	final int screenHeight = tileSize * maxScreenRow;	// 576px
+	public final int maxScreenCol = 16;	// 16 for window - 40 for full screen
+	public final int maxScreenRow = 12;	// 12 for window - 21 for full screen
+	public final int screenWidth = tileSize * maxScreenCol;	// 768px
+	public final int screenHeight = tileSize * maxScreenRow;	// 576px
+	
+	// World Settings
+	public final int maxWorldCol = 50;
+	public final int maxWorldRow = 50;
+	public final int worldWidth = tileSize * maxWorldCol;
+	public final int worldHeight = tileSize * maxWorldRow;
 	
 	// FPS
 	int FPS = 60;
+	
+	TileManager tileM = new TileManager(this);
 	
 	KeyHandler KeyH = new KeyHandler();	// instantiate key handler
 	
 	Thread gameThread;	// this will keep program running until we stop it
 						// when we start gameThread it will automatically call the run() method
 	
-	Player player = new Player(this,KeyH);
-	
-	// sets player's default position
-	int playerX = 100;
-	int playerY = 100;
-	int playerSpeed = 4;
-	
+	public Player player = new Player(this,KeyH);
+
 	
 	//constructor for game panel
 	public GamePanel() {
@@ -105,6 +109,8 @@ public class GamePanel extends JPanel implements Runnable{	// GamePanel class in
 		super.paintComponent(g);	// the parent class (JPanel)
 		
 		Graphics2D g2 =	(Graphics2D)g;	// Graphics2D extends Graphics class, provides more sophisticated control
+		
+		tileM.draw(g2);
 		
 		player.draw(g2);
 	
